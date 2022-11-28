@@ -1,0 +1,29 @@
+---
+- hosts: webservers
+  vars:
+    install_state: latest
+    service_state: started
+  become: true
+  tasks:
+    - name: Update Packages
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Install Packages
+      yum:
+        name:
+          - httpd
+          - httpd-tools
+        state: "{{ install_state }}"
+
+    - name: A simple web page
+      copy:
+        content: "<center><h2> Webserver is running on {{ ansible_hostname }} </h2></center>"
+        dest: /var/www/html/index.html
+      register: webpage
+    
+    - name: Start the Service
+      service:
+        name: httpd
+        state: "{{ service_state }}"
